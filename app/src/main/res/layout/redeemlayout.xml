@@ -45,12 +45,19 @@
                     android:layout_margin="2dp"
                     android:layout_height="match_parent"/>
             </LinearLayout>
-            <androidx.recyclerview.widget.RecyclerView
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:id="@+id/redeemcodeview"
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="4dp"
-                android:layout_height="30dp"/>
+                android:layout_height="35dp"
+                android:orientation="horizontal">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:id="@+id/redeemcodeview"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"/>
+
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="25dp"
@@ -58,7 +65,7 @@
                 android:layout_marginBottom="3dp"
                 android:layout_weight="1">
                 <androidx.appcompat.widget.AppCompatButton
-                    android:layout_width="65dp"
+                    android:layout_width="45dp"
                     android:id="@+id/redeemaddcode"
                     android:layout_height="match_parent"
                     android:background="@drawable/stroke"
@@ -96,26 +103,20 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="25dp"
-                        android:textColor="@color/white"
-                        android:text="Result: [0]"
-                        android:textSize="8dp"
-                        android:gravity="center"
-                        android:paddingLeft="3dp"
-                        android:id="@+id/redeemtotal"
-                        android:paddingRight="3dp"/>
+
                     <TextView
                         android:id="@+id/redeemsuccess"
-                        android:layout_width="wrap_content"
-                        android:layout_height="25dp"
+                        android:layout_width="70dp"
+                        android:layout_height="match_parent"
                         android:textColor="@color/white"
-                        android:text="Success: [0]"
-                        android:textSize="8dp"
+                        android:autoSizeMaxTextSize="8dp"
+                        android:autoSizeMinTextSize="3dp"
+                        android:autoSizeTextType="uniform"
+                        android:text="Success: [ 0 ]"
+                        android:singleLine="true"
                         android:gravity="center"
-                        android:paddingLeft="3dp"
-                        android:paddingRight="3dp"/>
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp"/>
                     <ImageView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
