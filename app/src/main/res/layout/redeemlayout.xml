@@ -25,7 +25,16 @@
             android:padding="3dp"
             android:id="@+id/redeemholderview"
             android:background="@drawable/rectanngle_stroke">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="15dp"
+                android:text="HIDE USER"
+                android:id="@+id/redeemhideuser"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:textSize="6dp"/>
             <LinearLayout
+                android:id="@+id/redeemusertab"
                 android:layout_width="match_parent"
                 android:layout_height="120dp"
                 android:background="@drawable/stroke"

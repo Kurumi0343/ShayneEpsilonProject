@@ -695,7 +695,7 @@ public class MainActivity extends AppCompatActivity {
                         case "0":
                             responsemessage[0] = "Redeem Successful";
                             successcounter = successcounter+1;
-                            redeemsuccess.setText(String.valueOf(successcounter));
+                            redeemsuccess.setText("Success: [".concat(String.valueOf(successcounter)).concat(" ]"));
                             break;
                         case "1419":
                             responsemessage[0] = "This Code Is Not Available In Your Region";
@@ -1129,7 +1129,6 @@ public class MainActivity extends AppCompatActivity {
                     canvas.drawBitmap(scaledBitmap,rect,new Rect(0,0,miniocrwatcher.getWidth(),miniocrwatcher.getHeight()),null);
 
                     readImageOCR(miniOCRBitmap);
-                    redeemholderview.setVisibility(View.VISIBLE);
 
                     imageReader.close();
                     virtualDisplay.release();
@@ -1149,15 +1148,16 @@ public class MainActivity extends AppCompatActivity {
             stringBuilder.append(build);
         }
 
-        String[] dataSeperator = stringBuilder.toString().split(" |\n");
+        String[] dataSeperator = stringBuilder.toString().split("[^a-zA-Z0-9]+");
         if (dataSeperator.length > 0) {
             for (int i = 0; i < dataSeperator.length; i++) {
-                if (dataSeperator[i].matches("^[a-zA-Z0-9]+$") && dataSeperator[i].length() > 7 && dataSeperator[i].length() < 20) {
+                if (dataSeperator[i].matches("[a-zA-Z]+[0-9]+[a-zA-Z0-9]*") && dataSeperator[i].length() > 7 && dataSeperator[i].length() < 20) {
                     addRedeemCode(dataSeperator[i]);
                 }
             }
         }
     }
+
     private class DeviceStatusTask extends AsyncTask<Void,Void,Void> {
         @Override
         protected Void doInBackground(Void... params) {
@@ -1209,10 +1209,10 @@ public class MainActivity extends AppCompatActivity {
             itemmap.put("redeemcode",code);
             redeemcodelist.add(itemmap);
             CodeItemAdapter.notifyDataSetChanged();
-        }
-        for (int i = 0; i < redeemprofilelist.size(); i++) {
-            if (redeemprofilelist.get(i).get("active").toString().equals("true")) {
-                requestRedeemCode(redeemprofilelist.get(i).get("id").toString(),redeemprofilelist.get(i).get("server").toString(),redeemprofilelist.get(i).get("vc").toString(),code,redeemprofilelist.get(i).get("username").toString());
+            for (int i = 0; i < redeemprofilelist.size(); i++) {
+                if (redeemprofilelist.get(i).get("active").toString().equals("true")) {
+                    requestRedeemCode(redeemprofilelist.get(i).get("id").toString(),redeemprofilelist.get(i).get("server").toString(),redeemprofilelist.get(i).get("vc").toString(),code,redeemprofilelist.get(i).get("username").toString());
+                }
             }
         }
     }

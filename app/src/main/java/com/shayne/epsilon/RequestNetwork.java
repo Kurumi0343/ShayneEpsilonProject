@@ -12,7 +12,7 @@ public class RequestNetwork {
 
     private int requestType = 0;
 
-    public RequestNetwork(Activity activity) {
+    public RequestNetwork(MainActivity activity) {
         this.activity = activity;
     }
 
