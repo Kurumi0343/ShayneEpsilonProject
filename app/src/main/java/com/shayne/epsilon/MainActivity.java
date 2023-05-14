@@ -74,7 +74,7 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView miniocrlabel, editiemexit,statusnetworktype, statusnetworkspeed,statusbatterytemperature,statusdevicefps,redeemadduser,adduserexit,adduserresponse,redeemsuccess;
+    private TextView redeemhideuser, miniocrlabel, editiemexit,statusnetworktype, statusnetworkspeed,statusbatterytemperature,statusdevicefps,redeemadduser,adduserexit,adduserresponse,redeemsuccess;
     private Button startactivity,adduserbutton,exitactivity,redeemaddcode, editiembutton;
     private EditText adduserplayerinfo,adduserverificationcode, editiemdata;
     private WindowManager redeemManagerService, miniOCRManagerService;
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView redeemclipbot, redeemocr,redeemminiocr,redeemclearresult;
     private View redeemView, adduserView, editItemView, miniOCRView;
     private AlertDialog addUserDialog, editItemDialog;
-    private LinearLayout redeemholderview, redeemresultholder, miniocrwatcher;
+    private LinearLayout redeemholderview, redeemresultholder, miniocrwatcher, redeemusertab;
     private RecyclerView redeemprofile, redeemcodeview;
     private redeemProfileAdapter profileAdapter;
     private ToggleButton miniocrtoggleswitch;
@@ -243,6 +243,10 @@ public class MainActivity extends AppCompatActivity {
         redeemminiocr = redeemView.findViewById(R.id.redeemminiocr);
         redeemsuccess = redeemView.findViewById(R.id.redeemsuccess);
         redeemclearresult = redeemView.findViewById(R.id.redeemclearresult);
+        redeemhideuser = redeemView.findViewById(R.id.redeemhideuser);
+        redeemusertab = redeemView.findViewById(R.id.redeemusertab);
+
+
         clipboardListener();
         GradientDrawable gradientDrawable = new GradientDrawable();
         gradientDrawable.setShape(GradientDrawable.RECTANGLE);
@@ -255,6 +259,19 @@ public class MainActivity extends AppCompatActivity {
         miniocrwatcher = miniOCRView.findViewById(R.id.miniocrwatcher);
         miniocrlabel = miniOCRView.findViewById(R.id.miniocrlabel);
         miniOCRTimer = new Timer();
+
+        redeemhideuser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (redeemhideuser.getText().toString().equals("HIDE USER")) {
+                    redeemusertab.setVisibility(View.GONE);
+                    redeemhideuser.setText("SHOW USER");
+                } else {
+                    redeemusertab.setVisibility(View.VISIBLE);
+                    redeemhideuser.setText("HIDE USER");
+                }
+            }
+        });
 
         miniocrlabel.setOnTouchListener(new View.OnTouchListener() {
             private int initialX;
