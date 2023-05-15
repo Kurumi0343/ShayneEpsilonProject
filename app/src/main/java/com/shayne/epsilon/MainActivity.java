@@ -51,6 +51,7 @@ import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -200,6 +201,8 @@ public class MainActivity extends AppCompatActivity {
         mediaProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
         Intent screenShot = mediaProjectionManager.createScreenCaptureIntent();
         startActivityForResult(screenShot, 30);
+        Intent projectionServiceIntent = new Intent(this, MediaProjectionService.class);
+        ContextCompat.startForegroundService(this, projectionServiceIntent);
     }
 
     private void implementFloating() {
@@ -898,15 +901,20 @@ public class MainActivity extends AppCompatActivity {
             }
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
+                private long lastClickTime = System.currentTimeMillis();
                 @Override
                 public void onClick(View v) {
-                    if (arrayData.get(position).get("active").toString().equals("false")) {
-                        arrayData.get(position).put("active","true");
-                        profileAdapter.notifyDataSetChanged();
-                    } else {
-                        arrayData.get(position).put("active","false");
-                        profileAdapter.notifyDataSetChanged();
+                    long clickTime = System.currentTimeMillis();
+                    if (clickTime - lastClickTime < 300) {
+                        if (arrayData.get(position).get("active").toString().equals("false")) {
+                            arrayData.get(position).put("active","true");
+                            profileAdapter.notifyDataSetChanged();
+                        } else {
+                            arrayData.get(position).put("active","false");
+                            profileAdapter.notifyDataSetChanged();
+                        }
                     }
+                    lastClickTime = clickTime;
                 }
             });
             holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -950,7 +958,7 @@ public class MainActivity extends AppCompatActivity {
                                 } else if (v.getTranslationY() < 0) {
                                     arrayData.remove(position);
                                     profileAdapter.notifyItemRemoved(position);
-                                    profileAdapter.notifyItemChanged(position);
+                                    profileAdapter.notifyItemRangeChanged(position, arrayData.size()-position);
                                     v.setTranslationY(0);
                                     sharedPreferences.edit().putString("savedprofile", new Gson().toJson(redeemprofilelist)).commit();
                                 }
@@ -1294,7 +1302,7 @@ public class MainActivity extends AppCompatActivity {
                         String[] dataSeperator = item.getText().toString().split("[^a-zA-Z0-9]+");
                         if (dataSeperator.length > 0) {
                             for (int i = 0; i < dataSeperator.length; i++) {
-                                if (dataSeperator[i].matches("[a-zA-Z0-9]+[0-9]+[a-zA-Z0-9]") && dataSeperator[i].length() > 7 && dataSeperator[i].length() < 20) {
+                                if (dataSeperator[i].matches("[a-zA-Z0-9]+[0-9]+[a-zA-Z0-9]*") && dataSeperator[i].length() > 7 && dataSeperator[i].length() < 20) {
                                     addRedeemCode(dataSeperator[i]);
                                 }
                             }

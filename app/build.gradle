@@ -12,13 +12,12 @@ plugins {
 
 android {
     namespace 'com.shayne.epsilon'
-    compileSdk 31
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.shayne.epsilon"
         minSdk 21
-        //noinspection ExpiredTargetSdkVersion
-        targetSdk 28
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
