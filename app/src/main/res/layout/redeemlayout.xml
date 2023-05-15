@@ -16,7 +16,7 @@
                 android:layout_width="40dp"
                 android:id="@+id/redeemicon"
                 android:layout_height="40dp"
-                android:src="@mipmap/ic_launcher"/>
+                android:src="@drawable/icon"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="285dp"
@@ -25,34 +25,40 @@
             android:padding="3dp"
             android:id="@+id/redeemholderview"
             android:background="@drawable/rectanngle_stroke">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="15dp"
-                android:text="HIDE USER"
-                android:id="@+id/redeemhideuser"
-                android:textColor="@color/white"
-                android:gravity="center"
-                android:textSize="6dp"/>
             <LinearLayout
-                android:id="@+id/redeemusertab"
                 android:layout_width="match_parent"
-                android:layout_height="120dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:background="@drawable/stroke"
                 android:gravity="center_vertical|center_horizontal">
                 <TextView
-                    android:layout_width="67dp"
-                    android:layout_height="117dp"
-                    android:layout_margin="3dp"
-                    android:textColor="@color/white"
-                    android:text="+"
-                    android:id="@+id/redeemadduser"
-                    android:background="@drawable/rectanngle_stroke"
-                    android:gravity="center_horizontal|center_vertical"/>
-                <androidx.recyclerview.widget.RecyclerView
                     android:layout_width="match_parent"
-                    android:id="@+id/redeemprofile"
-                    android:layout_margin="2dp"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="15dp"
+                    android:text="HIDE USER"
+                    android:id="@+id/redeemhideuser"
+                    android:textColor="@color/white"
+                    android:gravity="center"
+                    android:textSize="6dp"
+                    android:layout_marginBottom="2dp"/>
+                <LinearLayout
+                    android:id="@+id/redeemusertab"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:layout_width="67dp"
+                        android:layout_height="117dp"
+                        android:layout_margin="3dp"
+                        android:textColor="@color/white"
+                        android:text="+"
+                        android:id="@+id/redeemadduser"
+                        android:background="@drawable/rectanngle_stroke"
+                        android:gravity="center_horizontal|center_vertical"/>
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:layout_width="match_parent"
+                        android:id="@+id/redeemprofile"
+                        android:layout_margin="2dp"
+                        android:layout_height="match_parent"/>
+                </LinearLayout>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -65,7 +71,15 @@
                     android:id="@+id/redeemcodeview"
                     android:layout_height="35dp"
                     android:layout_weight="1"/>
-
+                <TextView
+                    android:layout_width="14dp"
+                    android:layout_height="match_parent"
+                    android:text="&lt;"
+                    android:id="@+id/redeemclearcodes"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    android:layout_marginLeft="3dp"
+                    android:background="@drawable/rectanngle_stroke"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"

@@ -12,10 +12,8 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.hardware.display.DisplayManager;
@@ -66,7 +64,6 @@ import org.json.JSONObject;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Timer;
@@ -74,7 +71,7 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView redeemhideuser, miniocrlabel, editiemexit,statusnetworktype, statusnetworkspeed,statusbatterytemperature,statusdevicefps,redeemadduser,adduserexit,adduserresponse,redeemsuccess;
+    private TextView redeemclearcodes,redeemhideuser, miniocrlabel, editiemexit,statusnetworktype, statusnetworkspeed,statusbatterytemperature,statusdevicefps,redeemadduser,adduserexit,adduserresponse,redeemsuccess;
     private Button startactivity,adduserbutton,exitactivity,redeemaddcode, editiembutton;
     private EditText adduserplayerinfo,adduserverificationcode, editiemdata;
     private WindowManager redeemManagerService, miniOCRManagerService;
@@ -117,7 +114,6 @@ public class MainActivity extends AppCompatActivity {
         statusdevicefps = findViewById(R.id.statusdevicefps);
         startactivity = findViewById(R.id.startactivity);
         exitactivity = findViewById(R.id.exitactivity);
-
         sharedPreferences = getSharedPreferences("data", Activity.MODE_PRIVATE);
 
         Handler handler = new Handler();
@@ -125,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 new DeviceStatusTask().execute();
-                handler.postDelayed(this, 200); // Run the task again after 1 second
+                handler.postDelayed(this, 200);
             }
         };
         handler.postDelayed(runnable, 200);
@@ -200,6 +196,12 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent,25);
     }
 
+    public void requestRecordingPermission() {
+        mediaProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+        Intent screenShot = mediaProjectionManager.createScreenCaptureIntent();
+        startActivityForResult(screenShot, 30);
+    }
+
     private void implementFloating() {
         int LAYOUT_FLAG;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -244,12 +246,11 @@ public class MainActivity extends AppCompatActivity {
         redeemsuccess = redeemView.findViewById(R.id.redeemsuccess);
         redeemclearresult = redeemView.findViewById(R.id.redeemclearresult);
         redeemhideuser = redeemView.findViewById(R.id.redeemhideuser);
+        redeemclearcodes = redeemView.findViewById(R.id.redeemclearcodes);
         redeemusertab = redeemView.findViewById(R.id.redeemusertab);
 
 
         clipboardListener();
-        GradientDrawable gradientDrawable = new GradientDrawable();
-        gradientDrawable.setShape(GradientDrawable.RECTANGLE);
 
         rect = new Rect();
         int[] rectLocation = new int[2];
@@ -320,6 +321,8 @@ public class MainActivity extends AppCompatActivity {
 
                 }
                 if (miniocrtoggleswitch.isChecked()) {
+                    final GradientDrawable gradientDrawable = new GradientDrawable();
+                    gradientDrawable.setShape(GradientDrawable.RECTANGLE);
                     gradientDrawable.setStroke(2, Color.WHITE);
                     miniocrtoggleswitch.setBackground(gradientDrawable);
                     miniOCRManager.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH;
@@ -339,6 +342,8 @@ public class MainActivity extends AppCompatActivity {
                     };
                     miniOCRTimer.scheduleAtFixedRate(miniOCRTimerTask,20,600);
                 } else {
+                    final GradientDrawable gradientDrawable = new GradientDrawable();
+                    gradientDrawable.setShape(GradientDrawable.RECTANGLE);
                     gradientDrawable.setStroke(2, Color.parseColor("#212121"));
                     miniocrtoggleswitch.setBackground(gradientDrawable);
                     miniOCRManager.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
@@ -356,9 +361,7 @@ public class MainActivity extends AppCompatActivity {
                 miniOCRManager.y = 300;
 
                 if (mediaProjection == null) {
-                    mediaProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
-                    Intent screenShot = mediaProjectionManager.createScreenCaptureIntent();
-                    startActivityForResult(screenShot, 30);
+                    requestRecordingPermission();
                 } else {
                     if (miniOCRView.getWindowToken() == null) {
                         miniOCRManagerService.addView(miniOCRView, miniOCRManager);
@@ -372,9 +375,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (mediaProjection == null) {
-                    mediaProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
-                    Intent screenShot  = mediaProjectionManager.createScreenCaptureIntent();
-                    startActivityForResult(screenShot,30);
+                    requestRecordingPermission();
                 } else {
                     redeemholderview.setVisibility(View.GONE);
                     Handler handler = new Handler();
@@ -389,15 +390,28 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        redeemclearcodes.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                redeemcodelist.clear();
+                CodeItemAdapter.notifyDataSetChanged();
+                sharedPreferences.edit().putString("savedcode", new Gson().toJson(redeemcodelist)).commit();
+                return true;
+            }
+        });
         redeemclipbot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (listenClipboard) {
                     listenClipboard = false;
+                    final GradientDrawable gradientDrawable = new GradientDrawable();
+                    gradientDrawable.setShape(GradientDrawable.RECTANGLE);
                     gradientDrawable.setStroke(2, Color.parseColor("#212121"));
                     redeemclipbot.setBackground(gradientDrawable);
                 } else {
                     listenClipboard = true;
+                    final GradientDrawable gradientDrawable = new GradientDrawable();
+                    gradientDrawable.setShape(GradientDrawable.RECTANGLE);
                     gradientDrawable.setStroke(2, Color.WHITE);
                     redeemclipbot.setBackground(gradientDrawable);
                 }
@@ -529,13 +543,16 @@ public class MainActivity extends AppCompatActivity {
                         adduserresponse.setVisibility(View.VISIBLE);
                         adduserresponse.setText("Requesting...");
                     } else {
+                        adduserresponse.setVisibility(View.VISIBLE);
                         adduserresponse.setText("Error: Invalid Information Format.");
                     }
                 } else if (adduserbutton.getText().toString().equals("UPDATE CODE")) {
                     if (adduserverificationcode.getText().toString().length() == 6) {
                         redeemprofilelist.get(pos).put("vc", adduserverificationcode.getText().toString());
                         profileAdapter.notifyDataSetChanged();
-                        addUserDialog.dismiss();
+                        redeemholderview.removeViewAt(0);
+                        redeemhideuser.setVisibility(View.VISIBLE);
+                        redeemusertab.setVisibility(View.VISIBLE);
                     } else {
                         adduserresponse.setVisibility(View.VISIBLE);
                         adduserresponse.setText("Error: Verification Code must be 6 digit number.");
@@ -546,7 +563,9 @@ public class MainActivity extends AppCompatActivity {
                         redeemprofilelist.add(itemmap);
                         profileAdapter.notifyDataSetChanged();
                         redeemprofile.scrollToPosition(redeemprofilelist.size() -1);
-                        addUserDialog.dismiss();
+                        redeemholderview.removeViewAt(0);
+                        redeemhideuser.setVisibility(View.VISIBLE);
+                        redeemusertab.setVisibility(View.VISIBLE);
                     } else {
                         adduserresponse.setVisibility(View.VISIBLE);
                         adduserresponse.setText("Error: Verification Code must be 6 digit number.");
@@ -557,24 +576,17 @@ public class MainActivity extends AppCompatActivity {
         adduserexit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addUserDialog.dismiss();
+                redeemholderview.removeViewAt(0);
+                redeemhideuser.setVisibility(View.VISIBLE);
+                redeemusertab.setVisibility(View.VISIBLE);
             }
         });
-
-        WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
-                PixelFormat.TRANSLUCENT);
-        params.gravity = Gravity.CENTER;
-        addUserDialog.setView(adduserView);
-        addUserDialog.getWindow().setGravity(Gravity.CENTER);
-        addUserDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        addUserDialog.getWindow().setAttributes(params);
-        addUserDialog.setCancelable(false);
-        if (!addUserDialog.isShowing()) {
-            addUserDialog.show();
+        redeemhideuser.setVisibility(View.GONE);
+        redeemusertab.setVisibility(View.GONE);
+        if (redeemholderview.indexOfChild(adduserView) <= 0) {
+            redeemholderview.addView(adduserView,0);
+        } else {
+            redeemholderview.removeViewAt(0);
         }
     }
 
@@ -715,13 +727,49 @@ public class MainActivity extends AppCompatActivity {
                             redeemsuccess.setText("Success: [".concat(String.valueOf(successcounter)).concat(" ]"));
                             break;
                         case "1419":
-                            responsemessage[0] = "This Code Is Not Available In Your Region";
+                            responsemessage[0] = "This CDKey Is not available in your region";
                             break;
                         case "1405":
-                            responsemessage[0] = "Redeem Code Already Redeemed";
+                            responsemessage[0] = "CDKey Already Redeemed";
                             break;
                         case "1404":
-                            responsemessage[0] = "Incorrect Format Redeem Code";
+                            responsemessage[0] = "Incorrect Format CDKey";
+                            break;
+                        case "1036":
+                            responsemessage[0] = "CDKey Limitation Reach";
+                            break;
+                        case "1416":
+                            responsemessage[0] = "Use VPN";
+                            break;
+                        case "1415":
+                            responsemessage[0] = "Your Level is too high for this CDKey";
+                            break;
+                        case "1414":
+                            responsemessage[0] = "This CDKey is not paid yet";
+                            break;
+                        case "1413":
+                            responsemessage[0] = "This CDKey is only for new user";
+                            break;
+                        case "1411":
+                            responsemessage[0] = "You cant redeem this CDKey at this time, Please Wait";
+                            break;
+                        case "1409":
+                            responsemessage[0] = "Restriction Requirement Configuration Error";
+                            break;
+                        case "1408":
+                            responsemessage[0] = "This CDkey is not available in your ServerID";
+                            break;
+                        case "1406":
+                            responsemessage[0] = "This CDKey is Binded, Invalid Account";
+                            break;
+                        case "1403":
+                            responsemessage[0] = "This CDKey is Expired";
+                            break;
+                        case "1402":
+                            responsemessage[0] = "This CDKey does not exist";
+                            break;
+                        case "1401":
+                            responsemessage[0] = "Advance Server Only";
                             break;
                     }
                     if (dataSeperator.length > 1) {
@@ -1168,7 +1216,7 @@ public class MainActivity extends AppCompatActivity {
         String[] dataSeperator = stringBuilder.toString().split("[^a-zA-Z0-9]+");
         if (dataSeperator.length > 0) {
             for (int i = 0; i < dataSeperator.length; i++) {
-                if (dataSeperator[i].matches("[a-zA-Z]+[0-9]+[a-zA-Z0-9]*") && dataSeperator[i].length() > 7 && dataSeperator[i].length() < 20) {
+                if (dataSeperator[i].matches("[a-zA-Z0-9]+[0-9]+[a-zA-Z0-9]*") && dataSeperator[i].length() > 7 && dataSeperator[i].length() < 20) {
                     addRedeemCode(dataSeperator[i]);
                 }
             }
