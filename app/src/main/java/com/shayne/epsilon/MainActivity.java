@@ -72,12 +72,12 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView redeemclearcodes,redeemhideuser, miniocrlabel, editiemexit,statusnetworktype, statusnetworkspeed,statusbatterytemperature,statusdevicefps,redeemadduser,adduserexit,adduserresponse,redeemsuccess;
-    private Button startactivity,adduserbutton,exitactivity,redeemaddcode, editiembutton;
-    private EditText adduserplayerinfo,adduserverificationcode, editiemdata;
+    private TextView redeemclearcodes, redeemhideuser, miniocrlabel, editiemexit, statusnetworktype, statusnetworkspeed, statusbatterytemperature, statusdevicefps, redeemadduser, adduserexit, adduserresponse, redeemsuccess;
+    private Button startactivity, adduserbutton, exitactivity, redeemaddcode, editiembutton;
+    private EditText adduserplayerinfo, adduserverificationcode, editiemdata;
     private WindowManager redeemManagerService, miniOCRManagerService;
     private WindowManager.LayoutParams redeemManager, miniOCRManager;
-    private ImageView redeemclipbot, redeemocr,redeemminiocr,redeemclearresult;
+    private ImageView redeemclipbot, redeemocr, redeemminiocr, redeemclearresult;
     private View redeemView, adduserView, editItemView, miniOCRView;
     private AlertDialog addUserDialog, editItemDialog;
     private LinearLayout redeemholderview, redeemresultholder, miniocrwatcher, redeemusertab;
@@ -85,23 +85,23 @@ public class MainActivity extends AppCompatActivity {
     private redeemProfileAdapter profileAdapter;
     private ToggleButton miniocrtoggleswitch;
     private redeemCodeItemAdapter CodeItemAdapter;
-    private RequestNetwork vcrequest, ignrequest,redeemrequest;
+    private RequestNetwork vcrequest, ignrequest, redeemrequest;
     private RequestNetwork.RequestListener vcrequest_listener, ignrequest_listener, redeemrequest_listener;
     private ArrayList<HashMap<String, Object>> redeemprofilelist = new ArrayList<>();
     private ArrayList<HashMap<String, Object>> redeemcodelist = new ArrayList<>();
-    private HashMap<String,Object> itemmap, requestnetworkmap, requestheadersmap;
-    private ArrayList<Double> resultcount = new ArrayList<>();
+    private HashMap<String, Object> itemmap, requestnetworkmap, requestheadersmap;
+    private final ArrayList<Double> resultcount = new ArrayList<>();
     private SharedPreferences sharedPreferences;
     private boolean listenClipboard;
     private ImageReader imageReader;
     private VirtualDisplay virtualDisplay;
     private MediaProjection mediaProjection;
     private MediaProjectionManager mediaProjectionManager;
-    private Bitmap screenBitmap, miniOCRBitmap,resizeBitmap;
+    private Bitmap screenBitmap, miniOCRBitmap, resizeBitmap;
     private Rect rect;
     private Timer miniOCRTimer;
     private TimerTask miniOCRTimerTask;
-    private int screenWidth,screenHeight,rootHeight,rootWidth;
+    private int screenWidth, screenHeight, rootHeight, rootWidth;
     private long successcounter = 0;
 
     @Override
@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (Settings.canDrawOverlays(MainActivity.this)) {
                     if (!isExistFloating(redeemView)) {
-                        redeemManagerService.addView(redeemView,redeemManager);
+                        redeemManagerService.addView(redeemView, redeemManager);
                     }
                 } else {
                     requestOverlayPermission();
@@ -175,9 +175,10 @@ public class MainActivity extends AppCompatActivity {
         screenWidth = displayMetrics.widthPixels;
         screenHeight = displayMetrics.heightPixels;
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode,resultCode,data);
+        super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == 25) {
             if (Settings.canDrawOverlays(MainActivity.this) && !isExistFloating(redeemView)) {
@@ -188,13 +189,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (requestCode == 30 && resultCode == RESULT_OK) {
-            mediaProjection = mediaProjectionManager.getMediaProjection(resultCode,data);
+            mediaProjection = mediaProjectionManager.getMediaProjection(resultCode, data);
         }
     }
 
     public void requestOverlayPermission() {
-        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:"+getPackageName()));
-        startActivityForResult(intent,25);
+        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
+        startActivityForResult(intent, 25);
     }
 
     public void requestRecordingPermission() {
@@ -227,18 +228,20 @@ public class MainActivity extends AppCompatActivity {
         redeemView = getLayoutInflater().inflate(R.layout.redeemlayout, null);
         redeemprofile = redeemView.findViewById(R.id.redeemprofile);
         redeemcodeview = redeemView.findViewById(R.id.redeemcodeview);
-        if (!sharedPreferences.getString("savedprofile","").equals("")) {
-            redeemprofilelist = new Gson().fromJson(sharedPreferences.getString("savedprofile",""), new TypeToken<ArrayList<HashMap<String,Object>>>(){}.getType());
+        if (!sharedPreferences.getString("savedprofile", "").equals("")) {
+            redeemprofilelist = new Gson().fromJson(sharedPreferences.getString("savedprofile", ""), new TypeToken<ArrayList<HashMap<String, Object>>>() {
+            }.getType());
         }
-        if (!sharedPreferences.getString("savedcode","").equals("")) {
-            redeemcodelist = new Gson().fromJson(sharedPreferences.getString("savedcode",""), new TypeToken<ArrayList<HashMap<String,Object>>>(){}.getType());
+        if (!sharedPreferences.getString("savedcode", "").equals("")) {
+            redeemcodelist = new Gson().fromJson(sharedPreferences.getString("savedcode", ""), new TypeToken<ArrayList<HashMap<String, Object>>>() {
+            }.getType());
         }
         profileAdapter = new redeemProfileAdapter(redeemprofilelist);
         CodeItemAdapter = new redeemCodeItemAdapter(redeemcodelist);
         redeemprofile.setAdapter(profileAdapter);
         redeemcodeview.setAdapter(CodeItemAdapter);
-        redeemcodeview.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false));
-        redeemprofile.setLayoutManager(new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.HORIZONTAL,false));
+        redeemcodeview.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));
+        redeemprofile.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));
         redeemadduser = redeemView.findViewById(R.id.redeemadduser);
         redeemholderview = redeemView.findViewById(R.id.redeemholderview);
         redeemresultholder = redeemView.findViewById(R.id.redeemresultholder);
@@ -282,6 +285,7 @@ public class MainActivity extends AppCompatActivity {
             private int initialY;
             private float initialTouchX;
             private float initialTouchY;
+
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
@@ -299,8 +303,8 @@ public class MainActivity extends AppCompatActivity {
                     case MotionEvent.ACTION_UP:
                         miniocrwatcher.getGlobalVisibleRect(rect);
                         miniocrwatcher.getLocationOnScreen(rectLocation);
-                        rect.offset(rectLocation[0],rectLocation[1]);
-                        rect.set(rect.left,rect.top-75,rect.right,rect.bottom-75);
+                        rect.offset(rectLocation[0], rectLocation[1]);
+                        rect.set(rect.left, rect.top - 75, rect.right, rect.bottom - 75);
                         break;
                 }
                 return true;
@@ -329,7 +333,7 @@ public class MainActivity extends AppCompatActivity {
                     gradientDrawable.setStroke(2, Color.WHITE);
                     miniocrtoggleswitch.setBackground(gradientDrawable);
                     miniOCRManager.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH;
-                    miniOCRManagerService.updateViewLayout(miniOCRView,miniOCRManager);
+                    miniOCRManagerService.updateViewLayout(miniOCRView, miniOCRManager);
                     miniOCRTimerTask = new TimerTask() {
                         @Override
                         public void run() {
@@ -343,14 +347,14 @@ public class MainActivity extends AppCompatActivity {
                             });
                         }
                     };
-                    miniOCRTimer.scheduleAtFixedRate(miniOCRTimerTask,20,600);
+                    miniOCRTimer.scheduleAtFixedRate(miniOCRTimerTask, 20, 600);
                 } else {
                     final GradientDrawable gradientDrawable = new GradientDrawable();
                     gradientDrawable.setShape(GradientDrawable.RECTANGLE);
                     gradientDrawable.setStroke(2, Color.parseColor("#212121"));
                     miniocrtoggleswitch.setBackground(gradientDrawable);
                     miniOCRManager.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-                    miniOCRManagerService.updateViewLayout(miniOCRView,miniOCRManager);
+                    miniOCRManagerService.updateViewLayout(miniOCRView, miniOCRManager);
                 }
             }
         });
@@ -425,6 +429,7 @@ public class MainActivity extends AppCompatActivity {
             private int initialY;
             private float initialTouchX;
             private float initialTouchY;
+
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
@@ -458,11 +463,11 @@ public class MainActivity extends AppCompatActivity {
                 if (redeemholderview.getVisibility() == View.GONE) {
                     redeemholderview.setVisibility(View.VISIBLE);
                     redeemManager.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH;
-                    redeemManagerService.updateViewLayout(redeemView,redeemManager);
+                    redeemManagerService.updateViewLayout(redeemView, redeemManager);
                 } else {
                     redeemholderview.setVisibility(View.GONE);
                     redeemManager.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-                    redeemManagerService.updateViewLayout(redeemView,redeemManager);
+                    redeemManagerService.updateViewLayout(redeemView, redeemManager);
                 }
             }
         });
@@ -477,7 +482,7 @@ public class MainActivity extends AppCompatActivity {
         redeemaddcode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addUpdateDialog("",0);
+                addUpdateDialog("", 0);
             }
         });
 
@@ -499,7 +504,7 @@ public class MainActivity extends AppCompatActivity {
         return isExist[0];
     }
 
-    private void addFloatingDialog(boolean userinfo, boolean vc, String bt,int pos) {
+    private void addFloatingDialog(boolean userinfo, boolean vc, String bt, int pos) {
         adduserView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.adduserlayout, null);
         addUserDialog = new AlertDialog.Builder(getApplicationContext()).create();
         adduserplayerinfo = adduserView.findViewById(R.id.adduserplayerinfo);
@@ -529,20 +534,20 @@ public class MainActivity extends AppCompatActivity {
                         requestheadersmap = new HashMap<>();
                         requestnetworkmap = new HashMap<>();
 
-                        requestheadersmap.put("Content-Type","application/json");
-                        requestnetworkmap.put("token","e934b1a8d62642d788727f409c6d207c");
-                        requestnetworkmap.put("appId","APP20210608084718702");
-                        requestnetworkmap.put("country","country");
-                        requestnetworkmap.put("language","en");
-                        requestnetworkmap.put("appAlias","mlbb_diamonds");
-                        requestnetworkmap.put("serverId",infoSeperator[1]);
-                        requestnetworkmap.put("goodsId","G20210706061905805");
-                        requestnetworkmap.put("payTypeId","587769");
-                        requestnetworkmap.put("userId",infoSeperator[0]);
+                        requestheadersmap.put("Content-Type", "application/json");
+                        requestnetworkmap.put("token", "e934b1a8d62642d788727f409c6d207c");
+                        requestnetworkmap.put("appId", "APP20210608084718702");
+                        requestnetworkmap.put("country", "country");
+                        requestnetworkmap.put("language", "en");
+                        requestnetworkmap.put("appAlias", "mlbb_diamonds");
+                        requestnetworkmap.put("serverId", infoSeperator[1]);
+                        requestnetworkmap.put("goodsId", "G20210706061905805");
+                        requestnetworkmap.put("payTypeId", "587769");
+                        requestnetworkmap.put("userId", infoSeperator[0]);
 
                         ignrequest.setHeaders(requestheadersmap);
-                        ignrequest.setParams(requestnetworkmap,RequestNetworkController.REQUEST_BODY);
-                        ignrequest.startRequestNetwork(RequestNetworkController.POST,"https://topup-center.shoplay365.com/shareit-topup-center/order/check-uid", infoSeperator[0].concat(":").concat(infoSeperator[1]), ignrequest_listener);
+                        ignrequest.setParams(requestnetworkmap, RequestNetworkController.REQUEST_BODY);
+                        ignrequest.startRequestNetwork(RequestNetworkController.POST, "https://topup-center.shoplay365.com/shareit-topup-center/order/check-uid", infoSeperator[0].concat(":").concat(infoSeperator[1]), ignrequest_listener);
                         adduserresponse.setVisibility(View.VISIBLE);
                         adduserresponse.setText("Requesting...");
                     } else {
@@ -565,7 +570,7 @@ public class MainActivity extends AppCompatActivity {
                         itemmap.put("vc", adduserverificationcode.getText().toString());
                         redeemprofilelist.add(itemmap);
                         profileAdapter.notifyDataSetChanged();
-                        redeemprofile.scrollToPosition(redeemprofilelist.size() -1);
+                        redeemprofile.scrollToPosition(redeemprofilelist.size() - 1);
                         redeemholderview.removeViewAt(0);
                         redeemhideuser.setVisibility(View.VISIBLE);
                         redeemusertab.setVisibility(View.VISIBLE);
@@ -587,13 +592,13 @@ public class MainActivity extends AppCompatActivity {
         redeemhideuser.setVisibility(View.GONE);
         redeemusertab.setVisibility(View.GONE);
         if (redeemholderview.indexOfChild(adduserView) <= 0) {
-            redeemholderview.addView(adduserView,0);
+            redeemholderview.addView(adduserView, 0);
         } else {
             redeemholderview.removeViewAt(0);
         }
     }
 
-    private void addUpdateDialog(String bt,int pos) {
+    private void addUpdateDialog(String bt, int pos) {
         editItemView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.edititem, null);
         editItemDialog = new AlertDialog.Builder(getApplicationContext()).create();
         editiemdata = editItemView.findViewById(R.id.editiemdata);
@@ -608,7 +613,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (editiembutton.getText().toString().equals("UPDATE")) {
-                    redeemcodelist.get(pos).put("redeemcode",editiemdata.getText().toString());
+                    redeemcodelist.get(pos).put("redeemcode", editiemdata.getText().toString());
                     editItemDialog.dismiss();
                     CodeItemAdapter.notifyDataSetChanged();
                 } else if (editiembutton.getText().toString().equals("SAVE")) {
@@ -658,9 +663,10 @@ public class MainActivity extends AppCompatActivity {
                         makeToast("Verification False");
                     }
                 } catch (Exception e) {
-                    makeToast(e.getMessage().toString());
+                    makeToast(e.getMessage());
                 }
             }
+
             @Override
             public void onErrorResponse(String tag, String message) {
             }
@@ -675,23 +681,24 @@ public class MainActivity extends AppCompatActivity {
                     if (mainObject.getString("code").equals("CHECK_UID_ILLEGAL")) {
                         adduserresponse.setText("Error: No User Found, Please Try Again.");
                     } else if (mainObject.getString("code").equals("200")) {
-                        adduserresponse.setText("User Found: ".concat(mainObject.getJSONObject("data").getString("nickName").toString()));
+                        adduserresponse.setText("User Found: ".concat(mainObject.getJSONObject("data").getString("nickName")));
                         adduserplayerinfo.setVisibility(View.GONE);
                         adduserverificationcode.setVisibility(View.VISIBLE);
                         adduserbutton.setText("ADD USER");
                         String[] infoSeperator = tag.split(":");
                         itemmap = new HashMap<>();
-                        itemmap.put("username",mainObject.getJSONObject("data").getString("nickName").toString());
-                        itemmap.put("server",infoSeperator[1]);
-                        itemmap.put("id",infoSeperator[0]);
+                        itemmap.put("username", mainObject.getJSONObject("data").getString("nickName"));
+                        itemmap.put("server", infoSeperator[1]);
+                        itemmap.put("id", infoSeperator[0]);
                         itemmap.put("active", "true");
-                        requestVerification(infoSeperator[0],infoSeperator[1]);
+                        requestVerification(infoSeperator[0], infoSeperator[1]);
                     }
                 } catch (Exception e) {
                     adduserresponse.setVisibility(View.VISIBLE);
-                    adduserresponse.setText(e.getMessage().toString());
+                    adduserresponse.setText(e.getMessage());
                 }
             }
+
             @Override
             public void onErrorResponse(String tag, String message) {
             }
@@ -726,7 +733,7 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case "0":
                             responsemessage[0] = "Redeem Successful";
-                            successcounter = successcounter+1;
+                            successcounter = successcounter + 1;
                             redeemsuccess.setText("Success: [".concat(String.valueOf(successcounter)).concat(" ]"));
                             break;
                         case "1419":
@@ -801,7 +808,7 @@ public class MainActivity extends AppCompatActivity {
                                 final TextView resultdisplaycount = resultdisplayextra.findViewById(R.id.resultdisplaycount);
                                 final TextView resultdisplayserver = resultdisplayextra.findViewById(R.id.resultdisplayserver);
                                 if (resultdisplayname.getText().toString().equals(dataSeperator[0])) {
-                                    resultcount.set(i,(double)resultcount.get((int)i).doubleValue()+1);
+                                    resultcount.set(i, (double) resultcount.get((int) i).doubleValue() + 1);
                                     resultdisplaycode.setText(dataSeperator[2]);
                                     resultdisplaystatus.setText(responsemessage[0]);
                                     resultdisplaycount.setText("[ ".concat(String.valueOf((long) resultcount.get(i).doubleValue())).concat(" ]"));
@@ -817,6 +824,7 @@ public class MainActivity extends AppCompatActivity {
                                     int finalI = i;
                                     redeemresultholder.getChildAt(i).setOnTouchListener(new View.OnTouchListener() {
                                         private float initialTouchX;
+
                                         @Override
                                         public boolean onTouch(View v, MotionEvent event) {
                                             switch (event.getAction()) {
@@ -827,7 +835,7 @@ public class MainActivity extends AppCompatActivity {
                                                     v.setTranslationX((event.getRawX() - initialTouchX));
                                                     break;
                                                 case MotionEvent.ACTION_UP:
-                                                    if (Math.abs(event.getRawY()-initialTouchX) > v.getWidth() * 0.7) {
+                                                    if (Math.abs(event.getRawY() - initialTouchX) > v.getWidth() * 0.7) {
                                                         if (v.getTranslationX() > 1) {
                                                             redeemresultholder.removeViewAt(finalI);
                                                             resultcount.remove(finalI);
@@ -853,240 +861,11 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             }
+
             @Override
             public void onErrorResponse(String tag, String message) {
             }
         };
-    }
-
-
-    public class redeemProfileAdapter extends RecyclerView.Adapter<redeemProfileAdapter.ViewHolder> {
-        ArrayList<HashMap<String, Object>> arrayData;
-        public redeemProfileAdapter(ArrayList<HashMap<String, Object>> arrayList) {
-            this.arrayData = arrayList;
-        }
-
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View view = layoutInflater.inflate(R.layout.profilelayout, null);
-            RecyclerView.LayoutParams layoutParams = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
-            view.setLayoutParams(layoutParams);
-
-            return new ViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-            View view = holder.itemView;
-
-            sharedPreferences.edit().putString("savedprofile", new Gson().toJson(redeemprofilelist)).commit();
-
-            final TextView profilename = view.findViewById(R.id.profilename);
-            final TextView profileserver = view.findViewById(R.id.profileserver);
-            final LinearLayout profilelayout = view.findViewById(R.id.profilelayout);
-            final boolean[] isLongPress = {true};
-            GradientDrawable gradientDrawable = new GradientDrawable();
-            gradientDrawable.setShape(GradientDrawable.RECTANGLE);
-
-            profilename.setText(arrayData.get(position).get("username").toString());
-            profileserver.setText(arrayData.get(position).get("server").toString());
-
-            if (arrayData.get(position).get("active").toString().equals("false")) {
-                gradientDrawable.setStroke(2, Color.parseColor("#212121"));
-                profilelayout.setBackground(gradientDrawable);
-            } else {
-                gradientDrawable.setStroke(2, Color.WHITE);
-                profilelayout.setBackground(gradientDrawable);
-            }
-
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                private long lastClickTime = System.currentTimeMillis();
-                @Override
-                public void onClick(View v) {
-                    long clickTime = System.currentTimeMillis();
-                    if (clickTime - lastClickTime < 300) {
-                        if (arrayData.get(position).get("active").toString().equals("false")) {
-                            arrayData.get(position).put("active","true");
-                            profileAdapter.notifyDataSetChanged();
-                        } else {
-                            arrayData.get(position).put("active","false");
-                            profileAdapter.notifyDataSetChanged();
-                        }
-                    }
-                    lastClickTime = clickTime;
-                }
-            });
-            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    if (isLongPress[0]) {
-                        addFloatingDialog(true,false,"UPDATE CODE",position);
-                        adduserverificationcode.setText(arrayData.get(position).get("vc").toString());
-                        if (arrayData.get(position).get("active").toString().equals("false")) {
-                            requestVerification(arrayData.get(position).get("id").toString(),arrayData.get(position).get("server").toString());
-                        }
-                    }
-                    return false;
-                }
-            });
-            holder.itemView.setOnTouchListener(new View.OnTouchListener() {
-                private float initialTouchY;
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    switch (event.getAction()) {
-                        case MotionEvent.ACTION_DOWN:
-                            initialTouchY = event.getRawY();
-                            isLongPress[0] = true;
-                            break;
-                        case MotionEvent.ACTION_MOVE:
-                            v.setTranslationY((event.getRawY() - initialTouchY));
-                            if (Math.abs(event.getRawY()-initialTouchY) > 0) {
-                                redeemprofile.setLayoutFrozen(true);
-                                isLongPress[0] = false;
-                            }
-                            break;
-                        case MotionEvent.ACTION_UP:
-                            redeemprofile.setLayoutFrozen(false);
-                            if (Math.abs(event.getRawY()-initialTouchY) > v.getHeight() * 0.7) {
-                                if (v.getTranslationY() > 1) {
-                                    arrayData.remove(position);
-                                    profileAdapter.notifyItemRemoved(position);
-                                    profileAdapter.notifyItemRangeChanged(position, arrayData.size()-position);
-                                    v.setTranslationY(0);
-                                    sharedPreferences.edit().putString("savedprofile", new Gson().toJson(redeemprofilelist)).commit();
-                                } else if (v.getTranslationY() < 0) {
-                                    arrayData.remove(position);
-                                    profileAdapter.notifyItemRemoved(position);
-                                    profileAdapter.notifyItemRangeChanged(position, arrayData.size()-position);
-                                    v.setTranslationY(0);
-                                    sharedPreferences.edit().putString("savedprofile", new Gson().toJson(redeemprofilelist)).commit();
-                                }
-                            } else {
-                                v.setTranslationY(0);
-                            }
-                            break;
-                    }
-                    return false;
-                }
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return arrayData.size();
-        }
-
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            public ViewHolder(View itemView) {
-                super(itemView);
-            }
-        }
-    }
-
-    public class redeemCodeItemAdapter extends RecyclerView.Adapter<redeemCodeItemAdapter.ViewHolder> {
-
-        ArrayList<HashMap<String, Object>> arrayData;
-        public redeemCodeItemAdapter(ArrayList<HashMap<String, Object>> arrayList) {
-            this.arrayData = arrayList;
-        }
-
-        @Override
-        public redeemCodeItemAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View view = layoutInflater.inflate(R.layout.redeemcodeitem, null);
-            RecyclerView.LayoutParams layoutParams = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
-            view.setLayoutParams(layoutParams);
-
-            return new redeemCodeItemAdapter.ViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull redeemCodeItemAdapter.ViewHolder holder, int position) {
-            View view = holder.itemView;
-
-            sharedPreferences.edit().putString("savedcode", new Gson().toJson(redeemcodelist)).commit();
-
-            final TextView redeemcodelabel = view.findViewById(R.id.redeemcodelabel);
-            final boolean[] isLongClick = {true};
-            redeemcodelabel.setText(arrayData.get(position).get("redeemcode").toString());
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                private long lastClickTime = 0;
-                @Override
-                public void onClick(View v) {
-                    long clickTime = System.currentTimeMillis();
-                    if (clickTime - lastClickTime < 300) {
-                        for (int i = 0; i < redeemprofilelist.size(); i++) {
-                            if (redeemprofilelist.get(i).get("active").toString().equals("true")) {
-                                requestRedeemCode(redeemprofilelist.get(i).get("id").toString(),redeemprofilelist.get(i).get("server").toString(),redeemprofilelist.get(i).get("vc").toString(),arrayData.get(position).get("redeemcode").toString(),redeemprofilelist.get(i).get("username").toString());
-                            }
-                        }
-                    }
-                    lastClickTime = clickTime;
-                }
-            });
-
-            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    if (isLongClick[0]) {
-                        addUpdateDialog("UPDATE",position);
-                        editiemdata.setText(arrayData.get(position).get("redeemcode").toString());
-                    }
-                    return false;
-                }
-            });
-            holder.itemView.setOnTouchListener(new View.OnTouchListener() {
-                private float initialTouchY;
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    switch (event.getAction()) {
-                        case MotionEvent.ACTION_DOWN:
-                            isLongClick[0] = true;
-                            initialTouchY = event.getRawY();
-                            break;
-                        case MotionEvent.ACTION_MOVE:
-                            v.setTranslationY((event.getRawY() - initialTouchY));
-                            if (Math.abs(event.getRawY()-initialTouchY) > 0) {
-                                redeemcodeview.setLayoutFrozen(true);
-                                isLongClick[0] = false;
-                            }
-                            break;
-                        case MotionEvent.ACTION_UP:
-                            redeemcodeview.setLayoutFrozen(false);
-                            if (Math.abs(event.getRawY()-initialTouchY) > v.getHeight() * 0.7) {
-                                if (v.getTranslationY() > 1) {
-                                    arrayData.remove(position);
-                                    CodeItemAdapter.notifyItemRemoved(position);
-                                    CodeItemAdapter.notifyItemRangeChanged(position, arrayData.size()-position);
-                                    v.setTranslationY(0);
-                                } else if (v.getTranslationY() < 0) {
-                                    arrayData.remove(position);
-                                    CodeItemAdapter.notifyItemRemoved(position);
-                                    CodeItemAdapter.notifyItemRangeChanged(position, arrayData.size()-position);
-                                    v.setTranslationY(0);
-                                }
-                                sharedPreferences.edit().putString("savedcode", new Gson().toJson(redeemcodelist)).commit();
-                            } else {
-                                v.setTranslationY(0);
-                            }
-                            break;
-                    }
-                    return false;
-                }
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return arrayData.size();
-        }
-
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            public ViewHolder(View itemView) {
-                super(itemView);
-            }
-        }
     }
 
     public float screenFPS() {
@@ -1136,17 +915,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean isExistFloating(View view) {
-        if (view.getParent() != null) {
-            return true;
-        } else {
-            return false;
-        }
+        return view.getParent() != null;
     }
 
     private void doOCR() {
         final Handler handler = new Handler();
-        imageReader = ImageReader.newInstance(screenWidth,screenHeight,PixelFormat.RGBA_8888,1);
-        virtualDisplay = mediaProjection.createVirtualDisplay("ScreenShot",screenWidth,screenHeight,getResources().getDisplayMetrics().densityDpi, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,imageReader.getSurface(),null,handler);
+        imageReader = ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 1);
+        virtualDisplay = mediaProjection.createVirtualDisplay("ScreenShot", screenWidth, screenHeight, getResources().getDisplayMetrics().densityDpi, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, imageReader.getSurface(), null, handler);
         imageReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
 
             @Override
@@ -1157,28 +932,27 @@ public class MainActivity extends AppCompatActivity {
                     int rowStride = image.getPlanes()[0].getRowStride();
                     int rowPadding = rowStride - pixelStride * screenWidth;
 
-                    screenBitmap = Bitmap.createBitmap(image.getWidth() + rowPadding / pixelStride,image.getHeight(),Bitmap.Config.ARGB_8888);
+                    screenBitmap = Bitmap.createBitmap(image.getWidth() + rowPadding / pixelStride, image.getHeight(), Bitmap.Config.ARGB_8888);
                     screenBitmap.copyPixelsFromBuffer(image.getPlanes()[0].getBuffer());
 
-                    Bitmap scaledBitmap = Bitmap.createBitmap(rootWidth,rootHeight,Bitmap.Config.ARGB_8888);
+                    Bitmap scaledBitmap = Bitmap.createBitmap(rootWidth, rootHeight, Bitmap.Config.ARGB_8888);
                     Canvas crop = new Canvas(screenBitmap);
-                    crop.drawBitmap(screenBitmap,new Rect(rowPadding*2,0,scaledBitmap.getWidth()-rowPadding*2,screenBitmap.getHeight()),new Rect(0,0,screenBitmap.getWidth(),screenBitmap.getHeight()),null);
+                    crop.drawBitmap(screenBitmap, new Rect(rowPadding * 2, 0, scaledBitmap.getWidth() - rowPadding * 2, screenBitmap.getHeight()), new Rect(0, 0, screenBitmap.getWidth(), screenBitmap.getHeight()), null);
 
-                    scaledBitmap = Bitmap.createScaledBitmap(screenBitmap,rootWidth,rootHeight,false);
+                    scaledBitmap = Bitmap.createScaledBitmap(screenBitmap, rootWidth, rootHeight, false);
                     readImageOCR(scaledBitmap);
-
                     imageReader.close();
                     virtualDisplay.release();
                 }
             }
-        },handler);
+        }, handler);
     }
 
     private void doMiniOCR() {
         final Handler handler = new Handler();
         miniocrwatcher.setBackground(null);
-        imageReader = ImageReader.newInstance(screenWidth,screenHeight,PixelFormat.RGBA_8888,1);
-        virtualDisplay = mediaProjection.createVirtualDisplay("ScreenShot",screenWidth,screenHeight,getResources().getDisplayMetrics().densityDpi, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,imageReader.getSurface(),null,handler);
+        imageReader = ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 1);
+        virtualDisplay = mediaProjection.createVirtualDisplay("ScreenShot", screenWidth, screenHeight, getResources().getDisplayMetrics().densityDpi, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, imageReader.getSurface(), null, handler);
         imageReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
 
             @Override
@@ -1189,17 +963,17 @@ public class MainActivity extends AppCompatActivity {
                     int rowStride = image.getPlanes()[0].getRowStride();
                     int rowPadding = rowStride - pixelStride * screenWidth;
 
-                    screenBitmap = Bitmap.createBitmap(image.getWidth() + rowPadding / pixelStride,image.getHeight(),Bitmap.Config.ARGB_8888);
+                    screenBitmap = Bitmap.createBitmap(image.getWidth() + rowPadding / pixelStride, image.getHeight(), Bitmap.Config.ARGB_8888);
                     screenBitmap.copyPixelsFromBuffer(image.getPlanes()[0].getBuffer());
 
-                    Bitmap scaledBitmap = Bitmap.createBitmap(rootWidth,rootHeight,Bitmap.Config.ARGB_8888);
+                    Bitmap scaledBitmap = Bitmap.createBitmap(rootWidth, rootHeight, Bitmap.Config.ARGB_8888);
                     Canvas crop = new Canvas(screenBitmap);
-                    crop.drawBitmap(screenBitmap,new Rect(rowPadding*2,0,scaledBitmap.getWidth()-rowPadding*2,screenBitmap.getHeight()),new Rect(0,0,screenBitmap.getWidth(),screenBitmap.getHeight()),null);
+                    crop.drawBitmap(screenBitmap, new Rect(rowPadding * 2, 0, scaledBitmap.getWidth() - rowPadding * 2, screenBitmap.getHeight()), new Rect(0, 0, screenBitmap.getWidth(), screenBitmap.getHeight()), null);
 
-                    scaledBitmap = Bitmap.createScaledBitmap(screenBitmap,rootWidth,rootHeight,false);
-                    miniOCRBitmap = Bitmap.createBitmap(miniocrwatcher.getWidth(),miniocrwatcher.getHeight(),Bitmap.Config.ARGB_8888);
+                    scaledBitmap = Bitmap.createScaledBitmap(screenBitmap, rootWidth, rootHeight, false);
+                    miniOCRBitmap = Bitmap.createBitmap(miniocrwatcher.getWidth(), miniocrwatcher.getHeight(), Bitmap.Config.ARGB_8888);
                     Canvas canvas = new Canvas(miniOCRBitmap);
-                    canvas.drawBitmap(scaledBitmap,rect,new Rect(0,0,miniocrwatcher.getWidth(),miniocrwatcher.getHeight()),null);
+                    canvas.drawBitmap(scaledBitmap, rect, new Rect(0, 0, miniocrwatcher.getWidth(), miniocrwatcher.getHeight()), null);
 
                     readImageOCR(miniOCRBitmap);
 
@@ -1207,7 +981,7 @@ public class MainActivity extends AppCompatActivity {
                     virtualDisplay.release();
                 }
             }
-        },handler);
+        }, handler);
     }
 
     private void readImageOCR(Bitmap toscan) {
@@ -1231,43 +1005,29 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private class DeviceStatusTask extends AsyncTask<Void,Void,Void> {
-        @Override
-        protected Void doInBackground(Void... params) {
-            statusnetworkspeed.setText(String.valueOf(getIternetPing()).concat("ms"));
-            statusnetworktype.setText(getNetworkType());
-            statusbatterytemperature.setText(String.valueOf((long)getBatteryTemperature()).concat("°C"));
-            return null;
-        }
-        @Override
-        protected void onPostExecute(Void result) {
-            statusdevicefps.setText(String.valueOf((long)screenFPS()));
-        }
-    }
-
-    public void makeToast(String  text) {
+    public void makeToast(String text) {
         Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
     }
 
     public void requestVerification(String id, String server) {
         requestnetworkmap = new HashMap<>();
-        requestnetworkmap.put("language","en");
-        requestnetworkmap.put("roleId",id);
-        requestnetworkmap.put("zoneId",server);
-        vcrequest.setParams(requestnetworkmap,RequestNetworkController.REQUEST_PARAM);
-        vcrequest.startRequestNetwork(RequestNetworkController.GET,"https://api.mobilelegends.com/mlweb/sendMail", "", vcrequest_listener);
+        requestnetworkmap.put("language", "en");
+        requestnetworkmap.put("roleId", id);
+        requestnetworkmap.put("zoneId", server);
+        vcrequest.setParams(requestnetworkmap, RequestNetworkController.REQUEST_PARAM);
+        vcrequest.startRequestNetwork(RequestNetworkController.GET, "https://api.mobilelegends.com/mlweb/sendMail", "", vcrequest_listener);
 
     }
 
     public void requestRedeemCode(String id, String server, String verification, String code, String username) {
         requestnetworkmap = new HashMap<>();
-        requestnetworkmap.put("language","en");
-        requestnetworkmap.put("redeemCode",code);
-        requestnetworkmap.put("roleId",id);
-        requestnetworkmap.put("vCode",verification);
-        requestnetworkmap.put("zoneId",server);
-        redeemrequest.setParams(requestnetworkmap,RequestNetworkController.REQUEST_BODY);
-        redeemrequest.startRequestNetwork(RequestNetworkController.POST,"https://api.mobilelegends.com/mlweb/sendCdk", username.concat(":").concat(server).concat(":").concat(code), redeemrequest_listener);
+        requestnetworkmap.put("language", "en");
+        requestnetworkmap.put("redeemCode", code);
+        requestnetworkmap.put("roleId", id);
+        requestnetworkmap.put("vCode", verification);
+        requestnetworkmap.put("zoneId", server);
+        redeemrequest.setParams(requestnetworkmap, RequestNetworkController.REQUEST_BODY);
+        redeemrequest.startRequestNetwork(RequestNetworkController.POST, "https://api.mobilelegends.com/mlweb/sendCdk", username.concat(":").concat(server).concat(":").concat(code), redeemrequest_listener);
     }
 
     private void addRedeemCode(String code) {
@@ -1279,12 +1039,12 @@ public class MainActivity extends AppCompatActivity {
         }
         if (!isExist[0]) {
             itemmap = new HashMap<>();
-            itemmap.put("redeemcode",code);
+            itemmap.put("redeemcode", code);
             redeemcodelist.add(itemmap);
             CodeItemAdapter.notifyDataSetChanged();
             for (int i = 0; i < redeemprofilelist.size(); i++) {
                 if (redeemprofilelist.get(i).get("active").toString().equals("true")) {
-                    requestRedeemCode(redeemprofilelist.get(i).get("id").toString(),redeemprofilelist.get(i).get("server").toString(),redeemprofilelist.get(i).get("vc").toString(),code,redeemprofilelist.get(i).get("username").toString());
+                    requestRedeemCode(redeemprofilelist.get(i).get("id").toString(), redeemprofilelist.get(i).get("server").toString(), redeemprofilelist.get(i).get("vc").toString(), code, redeemprofilelist.get(i).get("username").toString());
                 }
             }
         }
@@ -1311,5 +1071,255 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public class redeemProfileAdapter extends RecyclerView.Adapter<redeemProfileAdapter.ViewHolder> {
+        ArrayList<HashMap<String, Object>> arrayData;
+
+        public redeemProfileAdapter(ArrayList<HashMap<String, Object>> arrayList) {
+            this.arrayData = arrayList;
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View view = layoutInflater.inflate(R.layout.profilelayout, null);
+            RecyclerView.LayoutParams layoutParams = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            view.setLayoutParams(layoutParams);
+
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, @SuppressLint("RecyclerView") int position) {
+            View view = holder.itemView;
+
+            sharedPreferences.edit().putString("savedprofile", new Gson().toJson(redeemprofilelist)).commit();
+
+            final TextView profilename = view.findViewById(R.id.profilename);
+            final TextView profileserver = view.findViewById(R.id.profileserver);
+            final LinearLayout profilelayout = view.findViewById(R.id.profilelayout);
+            final boolean[] isLongPress = {true};
+            GradientDrawable gradientDrawable = new GradientDrawable();
+            gradientDrawable.setShape(GradientDrawable.RECTANGLE);
+
+            profilename.setText(arrayData.get(position).get("username").toString());
+            profileserver.setText(arrayData.get(position).get("server").toString());
+
+            if (arrayData.get(position).get("active").toString().equals("false")) {
+                gradientDrawable.setStroke(2, Color.parseColor("#212121"));
+                profilelayout.setBackground(gradientDrawable);
+            } else {
+                gradientDrawable.setStroke(2, Color.WHITE);
+                profilelayout.setBackground(gradientDrawable);
+            }
+
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                private long lastClickTime = System.currentTimeMillis();
+
+                @Override
+                public void onClick(View v) {
+                    long clickTime = System.currentTimeMillis();
+                    if (clickTime - lastClickTime < 300) {
+                        if (arrayData.get(position).get("active").toString().equals("false")) {
+                            arrayData.get(position).put("active", "true");
+                            profileAdapter.notifyDataSetChanged();
+                        } else {
+                            arrayData.get(position).put("active", "false");
+                            profileAdapter.notifyDataSetChanged();
+                        }
+                    }
+                    lastClickTime = clickTime;
+                }
+            });
+            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    if (isLongPress[0]) {
+                        addFloatingDialog(true, false, "UPDATE CODE", position);
+                        adduserverificationcode.setText(arrayData.get(position).get("vc").toString());
+                        if (arrayData.get(position).get("active").toString().equals("false")) {
+                            requestVerification(arrayData.get(position).get("id").toString(), arrayData.get(position).get("server").toString());
+                        }
+                    }
+                    return false;
+                }
+            });
+            holder.itemView.setOnTouchListener(new View.OnTouchListener() {
+                private float initialTouchY;
+
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            initialTouchY = event.getRawY();
+                            isLongPress[0] = true;
+                            break;
+                        case MotionEvent.ACTION_MOVE:
+                            v.setTranslationY((event.getRawY() - initialTouchY));
+                            if (Math.abs(event.getRawY() - initialTouchY) > 0) {
+                                redeemprofile.setLayoutFrozen(true);
+                                isLongPress[0] = false;
+                            }
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            redeemprofile.setLayoutFrozen(false);
+                            if (Math.abs(event.getRawY() - initialTouchY) > v.getHeight() * 0.7) {
+                                if (v.getTranslationY() > 1) {
+                                    arrayData.remove(position);
+                                    profileAdapter.notifyItemRemoved(position);
+                                    profileAdapter.notifyItemRangeChanged(position, arrayData.size() - position);
+                                    v.setTranslationY(0);
+                                    sharedPreferences.edit().putString("savedprofile", new Gson().toJson(redeemprofilelist)).commit();
+                                } else if (v.getTranslationY() < 0) {
+                                    arrayData.remove(position);
+                                    profileAdapter.notifyItemRemoved(position);
+                                    profileAdapter.notifyItemRangeChanged(position, arrayData.size() - position);
+                                    v.setTranslationY(0);
+                                    sharedPreferences.edit().putString("savedprofile", new Gson().toJson(redeemprofilelist)).commit();
+                                }
+                            } else {
+                                v.setTranslationY(0);
+                            }
+                            break;
+                    }
+                    return false;
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return arrayData.size();
+        }
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            public ViewHolder(View itemView) {
+                super(itemView);
+            }
+        }
+    }
+
+    public class redeemCodeItemAdapter extends RecyclerView.Adapter<redeemCodeItemAdapter.ViewHolder> {
+
+        ArrayList<HashMap<String, Object>> arrayData;
+
+        public redeemCodeItemAdapter(ArrayList<HashMap<String, Object>> arrayList) {
+            this.arrayData = arrayList;
+        }
+
+        @Override
+        public redeemCodeItemAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View view = layoutInflater.inflate(R.layout.redeemcodeitem, null);
+            RecyclerView.LayoutParams layoutParams = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            view.setLayoutParams(layoutParams);
+
+            return new redeemCodeItemAdapter.ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull redeemCodeItemAdapter.ViewHolder holder, int position) {
+            View view = holder.itemView;
+
+            sharedPreferences.edit().putString("savedcode", new Gson().toJson(redeemcodelist)).commit();
+
+            final TextView redeemcodelabel = view.findViewById(R.id.redeemcodelabel);
+            final boolean[] isLongClick = {true};
+            redeemcodelabel.setText(arrayData.get(position).get("redeemcode").toString());
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                private long lastClickTime = 0;
+
+                @Override
+                public void onClick(View v) {
+                    long clickTime = System.currentTimeMillis();
+                    if (clickTime - lastClickTime < 300) {
+                        for (int i = 0; i < redeemprofilelist.size(); i++) {
+                            if (redeemprofilelist.get(i).get("active").toString().equals("true")) {
+                                requestRedeemCode(redeemprofilelist.get(i).get("id").toString(), redeemprofilelist.get(i).get("server").toString(), redeemprofilelist.get(i).get("vc").toString(), arrayData.get(position).get("redeemcode").toString(), redeemprofilelist.get(i).get("username").toString());
+                            }
+                        }
+                    }
+                    lastClickTime = clickTime;
+                }
+            });
+
+            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    if (isLongClick[0]) {
+                        addUpdateDialog("UPDATE", position);
+                        editiemdata.setText(arrayData.get(position).get("redeemcode").toString());
+                    }
+                    return false;
+                }
+            });
+            holder.itemView.setOnTouchListener(new View.OnTouchListener() {
+                private float initialTouchY;
+
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            isLongClick[0] = true;
+                            initialTouchY = event.getRawY();
+                            break;
+                        case MotionEvent.ACTION_MOVE:
+                            v.setTranslationY((event.getRawY() - initialTouchY));
+                            if (Math.abs(event.getRawY() - initialTouchY) > 0) {
+                                redeemcodeview.setLayoutFrozen(true);
+                                isLongClick[0] = false;
+                            }
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            redeemcodeview.setLayoutFrozen(false);
+                            if (Math.abs(event.getRawY() - initialTouchY) > v.getHeight() * 0.7) {
+                                if (v.getTranslationY() > 1) {
+                                    arrayData.remove(position);
+                                    CodeItemAdapter.notifyItemRemoved(position);
+                                    CodeItemAdapter.notifyItemRangeChanged(position, arrayData.size() - position);
+                                    v.setTranslationY(0);
+                                } else if (v.getTranslationY() < 0) {
+                                    arrayData.remove(position);
+                                    CodeItemAdapter.notifyItemRemoved(position);
+                                    CodeItemAdapter.notifyItemRangeChanged(position, arrayData.size() - position);
+                                    v.setTranslationY(0);
+                                }
+                                sharedPreferences.edit().putString("savedcode", new Gson().toJson(redeemcodelist)).commit();
+                            } else {
+                                v.setTranslationY(0);
+                            }
+                            break;
+                    }
+                    return false;
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return arrayData.size();
+        }
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            public ViewHolder(View itemView) {
+                super(itemView);
+            }
+        }
+    }
+
+    private class DeviceStatusTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            statusnetworkspeed.setText(String.valueOf(getIternetPing()).concat("ms"));
+            statusnetworktype.setText(getNetworkType());
+            statusbatterytemperature.setText(String.valueOf((long) getBatteryTemperature()).concat("°C"));
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            statusdevicefps.setText(String.valueOf((long) screenFPS()));
+        }
     }
 }
