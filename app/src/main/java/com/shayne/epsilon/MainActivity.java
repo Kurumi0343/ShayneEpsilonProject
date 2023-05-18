@@ -41,6 +41,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -55,6 +56,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
@@ -142,6 +144,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (Settings.canDrawOverlays(MainActivity.this)) {
                     if (!isExistFloating(redeemView)) {
+                        redeemManager.gravity = Gravity.TOP | Gravity.LEFT;
+                        redeemManager.x = 20;
+                        redeemManager.y = 300;
                         redeemManagerService.addView(redeemView, redeemManager);
                     }
                 } else {
@@ -255,6 +260,16 @@ public class MainActivity extends AppCompatActivity {
         redeemclearcodes = redeemView.findViewById(R.id.redeemclearcodes);
         redeemusertab = redeemView.findViewById(R.id.redeemusertab);
 
+        final WindowManager exitService = (WindowManager) getSystemService(WINDOW_SERVICE);
+        final WindowManager.LayoutParams exitParams = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                LAYOUT_FLAG,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
+                PixelFormat.TRANSPARENT
+        );
+        final View exitView = getLayoutInflater().inflate(R.layout.exitlayout, null);
+
 
         clipboardListener();
 
@@ -332,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
                     gradientDrawable.setShape(GradientDrawable.RECTANGLE);
                     gradientDrawable.setStroke(2, Color.WHITE);
                     miniocrtoggleswitch.setBackground(gradientDrawable);
-                    miniOCRManager.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH;
+                    miniOCRManager.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
                     miniOCRManagerService.updateViewLayout(miniOCRView, miniOCRManager);
                     miniOCRTimerTask = new TimerTask() {
                         @Override
@@ -424,6 +439,21 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        boolean[] isDragExit = {false};
+        redeemView.findViewById(R.id.redeemicon).setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (redeemholderview.getVisibility() == View.GONE) {
+                    isDragExit[0] = true;
+                    exitParams.gravity = Gravity.LEFT | Gravity.TOP;
+                    exitParams.y = screenHeight-400;
+                    exitParams.x = rootWidth/2 - 70;
+                    exitService.addView(exitView, exitParams);
+                }
+                return false;
+            }
+        });
         redeemView.findViewById(R.id.redeemicon).setOnTouchListener(new View.OnTouchListener() {
             private int initialX;
             private int initialY;
@@ -444,6 +474,15 @@ public class MainActivity extends AppCompatActivity {
                         redeemManager.y = initialY + (int) (event.getRawY() - initialTouchY);
                         redeemManagerService.updateViewLayout(redeemView, redeemManager);
                         break;
+                        case MotionEvent.ACTION_UP:
+                            if (isDragExit[0]) {
+                                exitService.removeView(exitView);
+                                isDragExit[0] = false;
+                                if ((exitParams.x+70)>redeemManager.x && (exitParams.x-70)<redeemManager.x && (exitParams.y+70)>redeemManager.y && (exitParams.y-70)<redeemManager.y) {
+                                    redeemManagerService.removeView(redeemView);
+                                }
+                            }
+                            break;
                 }
                 return false;
             }
@@ -531,25 +570,30 @@ public class MainActivity extends AppCompatActivity {
                 if (adduserbutton.getText().toString().equals("REQUEST CODE")) {
                     String[] infoSeperator = adduserplayerinfo.getText().toString().split(" ");
                     if (infoSeperator.length > 1 && infoSeperator.length < 3) {
-                        requestheadersmap = new HashMap<>();
-                        requestnetworkmap = new HashMap<>();
+                        if (!isUserExist(infoSeperator[0],infoSeperator[1])) {
+                            requestheadersmap = new HashMap<>();
+                            requestnetworkmap = new HashMap<>();
 
-                        requestheadersmap.put("Content-Type", "application/json");
-                        requestnetworkmap.put("token", "e934b1a8d62642d788727f409c6d207c");
-                        requestnetworkmap.put("appId", "APP20210608084718702");
-                        requestnetworkmap.put("country", "country");
-                        requestnetworkmap.put("language", "en");
-                        requestnetworkmap.put("appAlias", "mlbb_diamonds");
-                        requestnetworkmap.put("serverId", infoSeperator[1]);
-                        requestnetworkmap.put("goodsId", "G20210706061905805");
-                        requestnetworkmap.put("payTypeId", "587769");
-                        requestnetworkmap.put("userId", infoSeperator[0]);
+                            requestheadersmap.put("Content-Type", "application/json");
+                            requestnetworkmap.put("token", "e934b1a8d62642d788727f409c6d207c");
+                            requestnetworkmap.put("appId", "APP20210608084718702");
+                            requestnetworkmap.put("country", "country");
+                            requestnetworkmap.put("language", "en");
+                            requestnetworkmap.put("appAlias", "mlbb_diamonds");
+                            requestnetworkmap.put("serverId", infoSeperator[1]);
+                            requestnetworkmap.put("goodsId", "G20210706061905805");
+                            requestnetworkmap.put("payTypeId", "587769");
+                            requestnetworkmap.put("userId", infoSeperator[0]);
 
-                        ignrequest.setHeaders(requestheadersmap);
-                        ignrequest.setParams(requestnetworkmap, RequestNetworkController.REQUEST_BODY);
-                        ignrequest.startRequestNetwork(RequestNetworkController.POST, "https://topup-center.shoplay365.com/shareit-topup-center/order/check-uid", infoSeperator[0].concat(":").concat(infoSeperator[1]), ignrequest_listener);
-                        adduserresponse.setVisibility(View.VISIBLE);
-                        adduserresponse.setText("Requesting...");
+                            ignrequest.setHeaders(requestheadersmap);
+                            ignrequest.setParams(requestnetworkmap, RequestNetworkController.REQUEST_BODY);
+                            ignrequest.startRequestNetwork(RequestNetworkController.POST, "https://topup-center.shoplay365.com/shareit-topup-center/order/check-uid", infoSeperator[0].concat(":").concat(infoSeperator[1]), ignrequest_listener);
+                            adduserresponse.setVisibility(View.VISIBLE);
+                            adduserresponse.setText("Requesting...");
+                        } else {
+                            adduserresponse.setVisibility(View.VISIBLE);
+                            adduserresponse.setText("Error: User Account Already Exist.");
+                        }
                     } else {
                         adduserresponse.setVisibility(View.VISIBLE);
                         adduserresponse.setText("Error: Invalid Information Format.");
@@ -650,6 +694,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private String userProfile(String id, String server) {
+        String[] profile = {""};
+        switch (id.length()) {
+            case 9:
+                profile[0] = "https://wsavatar.yuanzhanapp.com/dist/face/".concat(server).concat("/").concat(id.substring(7,9)).concat("/").concat(id.substring(5,7)).concat("/").concat(id).concat("_40_hd.jpg");
+                break;
+            case 8:
+                profile[0] = "https://wsavatar.yuanzhanapp.com/dist/face/".concat(server).concat("/").concat(id.substring(6,8)).concat("/").concat(id.substring(4,6)).concat("/").concat(id).concat("_40_hd.jpg");
+                break;
+            case 7:
+                profile[0] = "https://wsavatar.yuanzhanapp.com/dist/face/".concat(server).concat("/").concat(id.substring(5,7)).concat("/").concat(id.substring(3,5)).concat("/").concat(id).concat("_40_hd.jpg");
+                break;
+        }
+        return profile[0];
+    }
+
     private void requestNetworkTask() {
         vcrequest = new RequestNetwork(this);
         vcrequest_listener = new RequestNetwork.RequestListener() {
@@ -684,6 +744,7 @@ public class MainActivity extends AppCompatActivity {
                         adduserresponse.setText("User Found: ".concat(mainObject.getJSONObject("data").getString("nickName")));
                         adduserplayerinfo.setVisibility(View.GONE);
                         adduserverificationcode.setVisibility(View.VISIBLE);
+                        adduserverificationcode.requestFocus();
                         adduserbutton.setText("ADD USER");
                         String[] infoSeperator = tag.split(":");
                         itemmap = new HashMap<>();
@@ -691,6 +752,7 @@ public class MainActivity extends AppCompatActivity {
                         itemmap.put("server", infoSeperator[1]);
                         itemmap.put("id", infoSeperator[0]);
                         itemmap.put("active", "true");
+                        itemmap.put("picture",userProfile(infoSeperator[0],infoSeperator[1]));
                         requestVerification(infoSeperator[0], infoSeperator[1]);
                     }
                 } catch (Exception e) {
@@ -791,8 +853,8 @@ public class MainActivity extends AppCompatActivity {
                             final TextView resultdisplaycount = resultdisplayview.findViewById(R.id.resultdisplaycount);
                             final TextView resultdisplayserver = resultdisplayview.findViewById(R.id.resultdisplayserver);
                             final TextView resultdisplaystatus = resultdisplayview.findViewById(R.id.resultdisplaystatus);
-                            resultcount.add(Double.valueOf(0));
-                            resultdisplaycount.setText("[ 0 ]");
+                            resultcount.add(Double.valueOf(1));
+                            resultdisplaycount.setText("[ 1 ]");
                             resultdisplaycode.setText(dataSeperator[2]);
                             resultdisplayserver.setText(dataSeperator[1]);
                             resultdisplayname.setText(dataSeperator[0]);
@@ -1099,13 +1161,14 @@ public class MainActivity extends AppCompatActivity {
             final TextView profilename = view.findViewById(R.id.profilename);
             final TextView profileserver = view.findViewById(R.id.profileserver);
             final LinearLayout profilelayout = view.findViewById(R.id.profilelayout);
+            final de.hdodenhof.circleimageview.CircleImageView profilepic = view.findViewById(R.id.profilepic);
             final boolean[] isLongPress = {true};
             GradientDrawable gradientDrawable = new GradientDrawable();
             gradientDrawable.setShape(GradientDrawable.RECTANGLE);
 
             profilename.setText(arrayData.get(position).get("username").toString());
             profileserver.setText(arrayData.get(position).get("server").toString());
-
+            Glide.with(getApplicationContext()).load(arrayData.get(position).get("picture").toString()).into(profilepic);
             if (arrayData.get(position).get("active").toString().equals("false")) {
                 gradientDrawable.setStroke(2, Color.parseColor("#212121"));
                 profilelayout.setBackground(gradientDrawable);
@@ -1138,6 +1201,7 @@ public class MainActivity extends AppCompatActivity {
                     if (isLongPress[0]) {
                         addFloatingDialog(true, false, "UPDATE CODE", position);
                         adduserverificationcode.setText(arrayData.get(position).get("vc").toString());
+                        adduserverificationcode.requestFocus();
                         if (arrayData.get(position).get("active").toString().equals("false")) {
                             requestVerification(arrayData.get(position).get("id").toString(), arrayData.get(position).get("server").toString());
                         }
@@ -1321,5 +1385,17 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Void result) {
             statusdevicefps.setText(String.valueOf((long) screenFPS()));
         }
+    }
+
+    private boolean isUserExist(String id,String server) {
+        boolean[] isExist = {false};
+        if (redeemprofilelist.size() > 0) {
+            for (int i = 0;i < redeemprofilelist.size(); i++) {
+                if (redeemprofilelist.get(i).get("id").toString().equals(id) && redeemprofilelist.get(i).get("server").toString().equals(server)) {
+                    isExist[0] = true;
+                }
+            }
+        }
+        return isExist[0];
     }
 }
