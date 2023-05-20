@@ -1,2 +1,0 @@
--ignorewarnings
--keepattributes Signature
