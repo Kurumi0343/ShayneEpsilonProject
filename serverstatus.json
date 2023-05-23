@@ -1,3 +1,6 @@
 {
-  "status":"online"
+    "status":"online",
+    "version":"1.0.3",
+    "notes":["MINI OCR RESIZEABLE","VC EXPIRATION TIMER","IMPROVE STABILITY"]
 }
+  
