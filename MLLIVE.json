@@ -1,0 +1,16 @@
+{
+    "SPAIN":{"ESports":"https://www.facebook.com/mlbbesportses/videos/","FB":"https://www.facebook.com/MobileLegendsGameES/videos/"},
+    "Malaysia":{"MPL":"https://www.facebook.com/mplmy.official/videos/","FB":"https://www.facebook.com/MobileLegendsGameMalaysia/videos/","TikTok":"https://www.tiktok.com/@mobilelegendsmy"},
+    "Singapore":{"MPL":"https://www.facebook.com/mpl.sg.official/videos","TikTok":"https://www.tiktok.com/@mobilelegendssgofficial"},
+    "Arab":{"FB":"https://www.facebook.com/mobilelegndsgameAR/videos/","TikTok":"https://www.tiktok.com/@mobilelegendsarab"},
+    "Indonesia":{"MPL":"https://www.facebook.com/mpl.id.official/videos/","FB":"https://www.facebook.com/MobileLegendsGameIndonesia/videos/","TikTok":"https://www.tiktok.com/@mobilelegends_id"},
+    "America":{"FV":"https://www.facebook.com/MobileLegendsNorthAmerica/videos/","TikTok":"https://www.tiktok.com/@mlbb_northamerica"},
+    "Vietnam":{"FB":"https://www.facebook.com/MobileLegendsGameVN/videos/"},
+    "Philippines":{"MPL":"https://www.facebook.com/mplph.official/videos/","FB":"https://www.facebook.com/MobileLegendsOnlinePH/videos/","TikTok":"https://www.tiktok.com/@mobilelegendsphofficial"},
+    "Myanmar":{"FB":"https://www.facebook.com/MobileLegendsGameMyanmar/videos/","TikTok":"https://www.tiktok.com/@mobilelegendsmmofficial"},
+    "Brazil":{"MPL":"https://www.facebook.com/mplbrazil/videos/","TikTok":"https://www.tiktok.com/@mobilelegendsbrasil"},
+    "Latam":{"TikTok":"https://www.tiktok.com/@mobilelegendslatam"},
+    "Turkiye":{"Youtube":"https://www.youtube.com/@mobilelegendstr","TikTok":"https://www.tiktok.com/@mobilelegendstrofficial"},
+    "Cambodia":{"MPL":"https://www.facebook.com/MPL-Cambodia-112153038222597/videos","TikTok":"https://www.tiktok.com/@mobilelegendskhofficial"},
+    "Russia":{"Youtube":"https://www.youtube.com/@mlbbcis"}
+}
